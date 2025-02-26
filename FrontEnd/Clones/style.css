@@ -30,19 +30,19 @@ body
     position: relative;
     width: 30px; 
     height: 30px;
-    background: #8965ed;
-    margin: 0 px; 
+    background: #af92ff;
+    margin: 0 4px; 
     border-radius: 50%;
-    box-shadow: 0 0 0 10px #22202e, 0 0 20px #8965ed, 0 0 40px #8965ed;
-    animation: animate 4s linear infinite;
-    animation-duration: calc(160s / var(--i));
+    box-shadow: 0 0 0 10px #08070f00, 0 0 50px #bdabee, 0 0 200px #8965ed;
+    animation: animate 50s linear infinite;
+    animation-duration: calc(240s*3 / var(--i));
     
 }
 
 .bubbles span:nth-child(even)
 {
-    background: #5995ed;
-    box-shadow: 0 0 0 10px #22202e, 0 0 20px #5995ed, 0 0 40px #5995ed;
+    background: #4e95ff;
+    box-shadow: 0 0 0 10px #9893b800, 0 0 50px #5995ed, 0 0 200px #5995ed;
 }
 
 @keyframes animate 
@@ -54,14 +54,9 @@ body
 
     100%
     {
-        transform: translateY(-10vh) scale(.2)
+        transform: translateY(-2vh) scale(.3)
     }
 }
-
-
-
-
-
 
 .centered_image {
     display: block;
@@ -71,7 +66,10 @@ body
 }
 
 h1{
-    color:azure
+    color:azure;
+    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+    font-size: xx-large;
+    
 }
 
 
