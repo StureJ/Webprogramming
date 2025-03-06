@@ -1,60 +1,31 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8"
-    <title>Modvle - Guess a movie poster</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Movdle</title>
 </head>
 <body>
-    <h1>
-        MOVDLE
-    </h1>
-    <div class="container">
-        <div class="bubbles">
-            <span style="--i:10"></span>
-            <span style="--i:5"></span>
-            <span style="--i:8"></span>
-            <span style="--i:18"></span>
-            <span style="--i:14"></span>
-            <span style="--i:6"></span>
-            <span style="--i:15"></span>
-            <span style="--i:11"></span>
-            <span style="--i:6"></span>
-            <span style="--i:16"></span>
-            <span style="--i:8"></span>
-            <span style="--i:4"></span>
-            <span style="--i:7"></span>
-            <span style="--i:16"></span>
-            <span style="--i:14"></span>
-            <span style="--i:12"></span>
-            <span style="--i:10"></span>
-            <span style="--i:5"></span>
-            <span style="--i:10"></span>
-            <span style="--i:5"></span>
-            <span style="--i:8"></span>
-            <span style="--i:18"></span>
-            <span style="--i:14"></span>
-            <span style="--i:6"></span>
-            <span style="--i:15"></span>
-            <span style="--i:10"></span>
-            <span style="--i:5"></span>
-            <span style="--i:10"></span>
-            <span style="--i:5"></span>
-            <span style="--i:8"></span>
-            <span style="--i:18"></span>
-            <span style="--i:14"></span>
-            <span style="--i:6"></span>
-            <span style="--i:15"></span>
-            <span style="--i:11"></span>
-            <span style="--i:6"></span>
-            <span style="--i:16"></span>
-            <span style="--i:8"></span>
-            <span style="--i:4"></span>
-            <span style="--i:7"></span>
-            <span style="--i:16"></span>
-            <span style="--i:14"></span>
-            <span style="--i:12"></span>
-
-        </div>
+    <div class="intro">
+        <h1 class="logo-header">
+            <span class="logo">Mov</span><span class="logo">dle.</span>
+        </h1>
     </div>
+
+    <header>
+        <h4>Movdle.</h4>
+    </header>
+
+    <div class="input-container" id="inputContainer">
+        <input type="text" id="hiddenInput" class="custom-input" autocomplete="off">
+    </div>
+
+    <div class="guess-history" id="guessHistory"></div>
+
+    <script src="app.js"></script>
 </body>
+    
