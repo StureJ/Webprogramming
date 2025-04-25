@@ -69,6 +69,29 @@ function typewriterEffect(text, element) {
     type();
 }
 
+function fetchMovieImage(movieTitle) {
+    // Placeholder for AJAX request
+    console.log("Fetching image for:", movieTitle);
+    
+    // Simulate setting an image after request
+    setTimeout(() => {
+        document.getElementById("movieImage").src = "https://via.placeholder.com/250";
+        document.getElementById("movieImage").classList.remove("hidden");
+    }, 1000);
+}
+
+// Trigger image fetch on guess submission
+document.getElementById("hiddenInput").addEventListener("keypress", function(event) {
+    if (event.key === "Enter") {
+        event.preventDefault();
+        let guess = this.value.trim();
+        if (guess !== "") {
+            fetchMovieImage(guess);
+        }
+    }
+});
+
+
 
 
 
