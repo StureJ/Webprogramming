@@ -11,7 +11,8 @@ $dbname = "Movdle";
 $conn = new mysqli($servername, $username, $password, $dbname);
 
 //Check om den connecter
-if ($conn->connect_error) {
+if ($conn->connect_error) 
+{
    die("Fejl leaderboard" . $conn->connect_error);
 }
 
@@ -23,7 +24,8 @@ $sql = "SELECT Username, Succesful_attempt FROM Users WHERE movie_name = '$movie
 $result = $conn->query($sql);
 
 $leaderboard = array();
-if ($result->num_rows > 0) {
+if ($result->num_rows > 0) 
+{
    while ($row = $result->fetch_assoc()) {
        $leaderboard[] = $row;
    }
@@ -31,6 +33,5 @@ if ($result->num_rows > 0) {
 
 echo json_encode($leaderboard); //Laver om til JSON
 
-//Luk
-$conn->close();
+$conn->close(); //Sluk connection
 ?>

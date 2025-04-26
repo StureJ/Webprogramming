@@ -1,5 +1,5 @@
-/* General body styling */
-body {
+body 
+{
   display: flex;
   justify-content: center;
   align-items: center;
@@ -12,16 +12,17 @@ body {
   overflow: visible;
 }
 
-h1 {
-  font-size: 136px;  /* Large font size */
-  color: #ffffff;   /* Green color */
-  text-align: center;  /* Center the text */
-  margin-bottom: 20px;  /* Add some space below the heading */
-  font-family: Copperplate, sans-serif;  /* Font family */
+h1 
+{
+  font-size: 136px; 
+  color: #ffffff;   
+  text-align: center;  
+  margin-bottom: 20px; 
+  font-family: Copperplate, sans-serif;  
 }
 
-/* Form styling */
-form {
+form 
+{
   text-align: center;
   padding: 20px;
   border: 5px solid #ffffff;
@@ -30,7 +31,8 @@ form {
   box-sizing: border-box;
 }
 
-input[type="text"] {
+input[type="text"] 
+{
   padding: 8px;
   margin: 10px 0;
   font-size: 14px;
@@ -41,7 +43,8 @@ input[type="text"] {
   font-family: Tahoma;
 }
 
-input[type="submit"] {
+input[type="submit"] 
+{
   padding: 10px 20px;
   font-size: 16px;
   cursor: pointer;
@@ -53,7 +56,8 @@ input[type="submit"] {
   font-family: Tahoma;
 }
 
-input[type="submit"]:hover {
+input[type="submit"]:hover 
+{
   background-color: #ffc3a0;
   font-family: Tahoma;
 }
@@ -94,12 +98,11 @@ input[type="submit"]:hover {
   background-color: #ffc3a0;
 }
 
-/* Apply shadow to the container instead of the image */
 .random-poster {
   position: relative;
   width: 300px;
   height: 420px;
-  box-shadow: 0px 0px 70px rgba(255, 255, 255, 0.8); /* Shadow on container */
+  box-shadow: 0px 0px 70px rgba(255, 255, 255, 0.8); 
 }
 .random-poster img {
   width: 100%;
@@ -107,7 +110,6 @@ input[type="submit"]:hover {
   object-fit: cover;
 }
 
-/* Styling for guesses */
 .guesses {
   position: absolute;
   right: 0;
@@ -126,7 +128,6 @@ input[type="submit"]:hover {
   font-family: Tahoma;
 }
 
-/* Box styling for each guess */
 .guesses li span {
   display: inline-block;
   width: 30px;
@@ -140,28 +141,24 @@ input[type="submit"]:hover {
   text-transform: uppercase;
 }
 
-/* Move the entire list of letters to the left */
 .guesses ul {
   padding-left: 0;
   margin-left: -40px;
 }
 
-/* Correct letter color */
 .correct {
   background-color: green;
-  color: white; /* White text inside the green box */
+  color: white; 
   font-weight: bold;
 }
 
-/* Misplaced letter color */
 .misplaced {
   background-color: yellow;
-  color: black; /* Black text inside the yellow box */
+  color: black; 
   font-weight: bold;
 }
 
-/* Incorrect letter color */
 .incorrect {
   background-color: gray;
-  color: white; /* White text inside the gray box */
+  color: white; 
 }
