@@ -7,16 +7,6 @@ if (isset($_POST['username'])) {
     $_SESSION['username'] = $_POST['username'];
 }
 
-// Handle winning/losing and session resetting first
-if (isset($_SESSION['game_over']) && $_SESSION['game_over']) {
-    unset($_SESSION['random_poster']);
-    unset($_SESSION['target_word']);
-    unset($_SESSION['attempts']);
-    unset($_SESSION['guesses']);
-    unset($_SESSION['game_over']);
-    unset($_SESSION['won']);
-}
-
 // Set random poster and target word if not already set
 if (!isset($_SESSION['random_poster'])) {
     $randomPosterPath = getRandomMoviePoster();
@@ -25,8 +15,9 @@ if (!isset($_SESSION['random_poster'])) {
     $filename = pathinfo($randomPosterPath, PATHINFO_FILENAME);
     $_SESSION['target_word'] = strtolower($filename);
 
-    $_SESSION['attempts'] = 0;    // Reset attempts when new poster picked
-    $_SESSION['guesses'] = [];    // Reset guesses too
+    $_SESSION['attempts'] = 0;
+    $_SESSION['guesses'] = [];
+    $_SESSION['game_over'] = false;
 }
 
 $randomPoster = $_SESSION['random_poster'] ?? '';
@@ -42,25 +33,16 @@ if (isset($_POST['guess'])) {
     $_SESSION['attempts']++;
 
     if ($guess === $target) {
-        $_SESSION['game_over'] = true;
-        $_SESSION['won'] = true; // optional
-
-        // Database saving
-        $servername = "localhost";
-        $username = "root";
-        $password = "";
-        $dbname = "Movdle";
-
-        $conn = new mysqli($servername, $username, $password, $dbname);
+        // Connect to database
+        $conn = new mysqli('localhost', 'root', '', 'Movdle');
         if ($conn->connect_error) {
             die("Connection failed: " . $conn->connect_error);
         }
 
-        $user = $_SESSION['username'];
+        $user = $_SESSION['username'] ?? 'Unknown';
         $attempts = $_SESSION['attempts'];
         $movie_name = $_SESSION['target_word'];
 
-        // Check if user exists for this movie
         $checkUserSql = "SELECT * FROM Users WHERE Username = '$user' AND movie_name = '$movie_name'";
         $result = $conn->query($checkUserSql);
 
@@ -77,21 +59,22 @@ if (isset($_POST['guess'])) {
 
         $conn->close();
 
+        // Reset after success
+        unset($_SESSION['random_poster'], $_SESSION['target_word'], $_SESSION['attempts'], $_SESSION['guesses'], $_SESSION['game_over']);
+
         echo "<script>
             setTimeout(function() {
                 window.location.href = window.location.href;
-            }, 5000);
+            }, 3000);
         </script>";
 
     } else {
         if ($_SESSION['attempts'] >= 5) {
-            $_SESSION['game_over'] = true;
-            $_SESSION['won'] = false; // optional
-
+            session_destroy();
             echo "<script>
                 setTimeout(function() {
                     window.location.href = window.location.href;
-                }, 5000);
+                }, 3000);
             </script>";
         }
     }
@@ -102,6 +85,13 @@ if (isset($_POST['guess'])) {
 <head>
     <link rel="stylesheet" href="stylesheet.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <script>
+        window.randomPoster = "<?php echo $randomPoster; ?>";
+        window.attempts = <?php echo $_SESSION['attempts'] ?? 0; ?>;
+    </script>
+
+    <script src="script.js"></script>
 </head>
 <body>
 
@@ -110,53 +100,6 @@ if (isset($_POST['guess'])) {
     <div class="random-poster">
         <canvas id="posterCanvas" style="max-width: 100%; height: auto; margin-bottom: 20px;"></canvas>
     </div>
-
-    <script>
-        var randomPoster = "<?php echo $randomPoster; ?>";
-        var attempts = <?php echo isset($_SESSION['attempts']) ? $_SESSION['attempts'] : 0; ?>;
-        var gameOver = <?php echo isset($_SESSION['game_over']) && $_SESSION['game_over'] ? 'true' : 'false'; ?>;
-
-        var img = new Image();
-        img.crossOrigin = 'anonymous';
-        img.src = randomPoster;
-
-        var canvas = document.getElementById('posterCanvas');
-        var ctx = canvas.getContext('2d');
-
-        img.onload = function () {
-            var scaleFactor = 1;
-            var scaledWidth = img.width * scaleFactor;
-            var scaledHeight = img.height * scaleFactor;
-
-            canvas.width = scaledWidth;
-            canvas.height = scaledHeight;
-
-            ctx.drawImage(img, 0, 0, scaledWidth, scaledHeight);
-
-            if (!gameOver) {
-                let pixelationLevel = Math.max(1, 5 - attempts);
-                pixelateImage(ctx, canvas, pixelationLevel);
-            }
-        }
-
-        function pixelateImage(ctx, canvas, pixelationLevel) {
-            var imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-            var pixels = imgData.data;
-            var size = pixelationLevel * 10;
-
-            for (var y = 0; y < canvas.height; y += size) {
-                for (var x = 0; x < canvas.width; x += size) {
-                    var index = (x + y * canvas.width) * 4;
-                    var r = pixels[index];
-                    var g = pixels[index + 1];
-                    var b = pixels[index + 2];
-
-                    ctx.fillStyle = 'rgb(' + r + ',' + g + ',' + b + ')';
-                    ctx.fillRect(x, y, size, size);
-                }
-            }
-        }
-    </script>
 <?php endif; ?>
 
 <!-- Leaderboard Section -->
@@ -194,32 +137,6 @@ if (isset($_POST['guess'])) {
         <input type="submit" value="Guess">
     </form>
 </div>
-
-<script>
-    function loadLeaderboard() {
-        $.ajax({
-            url: 'get_leaderboard.php',
-            type: 'GET',
-            dataType: 'json',
-            success: function(data) {
-                var leaderboardHtml = "<tr><th>Username</th><th>Attempts used</th></tr>";
-                data.forEach(function(item) {
-                    leaderboardHtml += "<tr><td>" + item.Username + "</td><td>" + item.Succesful_attempt + "</td></tr>";
-                });
-                $('#leaderboard-table').html(leaderboardHtml);
-            }
-        });
-    }
-
-    function updateLeaderboard() {
-        loadLeaderboard();
-    }
-
-    $(document).ready(function() {
-        loadLeaderboard();
-        setInterval(updateLeaderboard, 5000);
-    });
-</script>
 
 </body>
 </html>

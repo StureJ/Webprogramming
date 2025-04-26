@@ -1,5 +1,7 @@
 <?php
-// Function to get a random movie poster from the folder
+session_start();
+
+// Function finder en random poster fra dir
 function getRandomMoviePoster($folder = 'Movie_posters') {
     $images = glob($folder . '/*.{jpg,jpeg,png,gif}', GLOB_BRACE);
     if (count($images) > 0) {
@@ -8,31 +10,31 @@ function getRandomMoviePoster($folder = 'Movie_posters') {
     return '';
 }
 
-// Function to compare the guess with the target word
+// Function for at samligne target med guess
 function compareGuess($guess, $target) {
     $result = [];
     $targetLetters = str_split($target);
     $guessLetters = str_split($guess);
     $targetLetterCount = array_count_values($targetLetters);
 
-    // First pass: check for correct letters (exact match)
+    // First pass: chekker for exat match for all bogstaver
     for ($i = 0; $i < strlen($guess); $i++) {
         if ($guessLetters[$i] === $targetLetters[$i]) {
-            $result[$i] = 'correct';  // Correct letter in correct position
-            $targetLetterCount[$guessLetters[$i]]--;  // Reduce count of that letter
+            $result[$i] = 'correct';  // rightig bogstaver i correct orden
+            $targetLetterCount[$guessLetters[$i]]--;  // reducer count
         } else {
-            $result[$i] = ''; // Placeholder for now
+            $result[$i] = ''; // oof
         }
     }
 
-    // Second pass: check for misplaced letters
+    // Second pass: checkker om folk er ordblinde
     for ($i = 0; $i < strlen($guess); $i++) {
         if ($result[$i] === '') {
             if (in_array($guessLetters[$i], $targetLetters) && $targetLetterCount[$guessLetters[$i]] > 0) {
-                $result[$i] = 'misplaced'; // Correct letter in the wrong position
-                $targetLetterCount[$guessLetters[$i]]--; // Reduce count of that letter
+                $result[$i] = 'misplaced'; // Correct letter, wrong spot
+                $targetLetterCount[$guessLetters[$i]]--;
             } else {
-                $result[$i] = 'incorrect'; // Incorrect letter
+                $result[$i] = 'incorrect'; // Wrong letter
             }
         }
     }
