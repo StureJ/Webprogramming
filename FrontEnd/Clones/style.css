@@ -89,19 +89,19 @@ body
 
 .input-container 
 {
-    position: absolute;
-    bottom: 20vh;
+    position: fixed; /* instead of absolute */
+    bottom: 200px; /* use pixels instead of vh */
     left: 50%;
     transform: translateX(-50%);
     border-bottom: 2px solid #f0ede7;
     width: 300px;
-    min-height: 25px;
-    font-size: 1.5rem;
+    height: 50px; /* fixed height instead of min-height */
+    font-size: 24px; /* fixed font-size in px */
     color: #f0ede7;
     display: flex;
     align-items: center;
     padding: 5px;
-    cursor: text; 
+    cursor: text;
 }
 
 .custom-input 
@@ -111,26 +111,53 @@ body
     outline: none;
     color: #f0ede7;
     position: absolute;
-    font-size: 1.2rem;
+    font-size: 20px; /* fixed font size */
     width: 95%; 
-    top: 50%; 
-    transform: translateY(-75%); 
+    top: 50%;
+    transform: translateY(-50%); 
 }
 
+.picture-box {
+    position: fixed;
+    bottom: 400px; /* use fixed px units */
+    left: 50%;
+    transform: translateX(-50%);
+    width: 250px;
+    height: 300px;
+    border-radius: 15px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.103), rgba(45, 24, 90, 0.135));
+    backdrop-filter: blur(10px);
+}
+
+.fixed-container {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    transform: scale(1);
+    transform-origin: top left;
+  }
+  
+
 .guess-history {
-    position: absolute;
-    left: 10px;  
-    top: 20vh;
+    position: fixed;
+    left: 20px;  
+    top: 200px;
     width: 300px;
-    min-height: 400px;
-    max-height: 400px; /* Ensures it doesn't grow too large */
+    height: 400px; /* fixed height */
     border: 1px solid #f0ede7;
     padding: 10px;
     color: #f0ede7;
-    font-size: 1.2rem;
-    overflow-y: auto; /* Enables scrolling if too many guesses */
-    word-wrap: break-word; /* Ensures long words don't overflow */
+    font-size: 18px;
+    overflow-y: auto;
+    word-wrap: break-word;
 }
+
 
 .typing-effect {
     display: inline-block;
@@ -160,26 +187,21 @@ body
     margin-bottom: 5px;
 }
 
-.picture-box {
-    position: absolute;
-    bottom: 35vh; /* Adjusts position above the input */
-    left: 50%;
-    transform: translateX(-50%);
-    width: 250px;
-    height: 300px;
-    border-radius: 15px;
-    overflow: hidden;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.103), rgba(45, 24, 90, 0.135));
-    backdrop-filter: blur(10px);
+
+
+/* Image Styling inside the Picture Box */
+.picture-box img {
+    width: 70%; /* Ensure the image takes up 90% of the box's width */
+    height: 70%; /* Ensure the image takes up 90% of the box's height */
+    object-fit: contain; /* Resize the image without distorting its aspect ratio */
+    object-position: center; /* Center the image within the box */
 }
 
-.picture-box img {
-    max-width: 100%;
-    max-height: 100%;
-    object-fit: cover;
+
+#canvas {
+    width: 100%;
+    height: auto;
+    display: block; /* Make the canvas block-level */
 }
 
 .hidden {
