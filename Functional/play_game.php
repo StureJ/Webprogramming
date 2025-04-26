@@ -1,18 +1,11 @@
 <?php
 session_start();
 
+include('functions.php');
+
 // Save username if posted
 if (isset($_POST['username'])) {
     $_SESSION['username'] = $_POST['username'];
-}
-
-// Function to get a random image from the "Movie_posters" folder
-function getRandomMoviePoster($folder = 'Movie_posters') {
-    $images = glob($folder . '/*.{jpg,jpeg,png,gif}', GLOB_BRACE);
-    if (count($images) > 0) {
-        return $images[array_rand($images)];
-    }
-    return '';
 }
 
 // Set random poster and target word if not already set
@@ -42,6 +35,9 @@ if (isset($_POST['guess'])) {
 
     // Add the guess to the guesses array
     $_SESSION['guesses'][] = $guess;
+
+    // Compare the guess with the target word
+    $comparisonResult = compareGuess($guess, $target);
 
     // Increment attempts
     $_SESSION['attempts']++;
@@ -140,11 +136,19 @@ if (isset($_POST['guess'])) {
     <ul>
         <?php
         foreach ($_SESSION['guesses'] as $guess) {
-            echo "<li>" . htmlspecialchars($guess) . "</li>";
+            // Compare each guess with the target word
+            $comparisonResult = compareGuess($guess, $_SESSION['target_word']);
+            echo "<li>";
+            for ($i = 0; $i < strlen($guess); $i++) {
+                $status = $comparisonResult[$i];
+                echo "<span class='$status'>" . htmlspecialchars($guess[$i]) . "</span>";
+            }
+            echo "</li>";
         }
         ?>
     </ul>
 </div>
+
 
 <!-- Game Input -->
 <div class="input">

@@ -95,4 +95,20 @@ input[type="submit"]:hover {
   width: 250px;
 }
 
+.correct {
+  color: green; /* Correct letter in the correct position */
+  font-weight: bold;
+}
+
+.misplaced {
+  color: yellow; /* Correct letter in the wrong position */
+  font-weight: bold;
+}
+
+.incorrect {
+  color: gray; /* Incorrect letter */
+}
+
+
+
 
