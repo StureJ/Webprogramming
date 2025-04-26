@@ -20,9 +20,9 @@ if ($conn->connect_error) {
 $sql = "CREATE DATABASE IF NOT EXISTS $dbname";
 
 if ($conn->query($sql) === TRUE) {
-  echo "Database is ready or created successfully.\n";
+  //echo "Database is ready or created successfully.\n";
 } else {
-  echo "Error creating database: " . $conn->error;
+  //echo "Error creating database: " . $conn->error;
 }
 
 
@@ -38,9 +38,9 @@ $tableSql = "CREATE TABLE IF NOT EXISTS Users (
 
 
 if ($conn->query($tableSql) === TRUE) {
-  echo "Table Users is ready.\n";
+  //echo "Table Users is ready.\n";
 } else {
-  echo "Error creating table: " . $conn->error;
+  //echo "Error creating table: " . $conn->error;
 }
 
 

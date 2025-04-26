@@ -6,28 +6,50 @@ if (isset($_POST['username'])) {
     $_SESSION['username'] = $_POST['username'];
 }
 
-// Set a target word if not already set
-if (!isset($_SESSION['target_word'])) {
-    $_SESSION['target_word'] = "orange"; // You can change this or randomize later
+// Function to get a random image from the "Movie_posters" folder
+function getRandomMoviePoster($folder = 'Movie_posters') {
+    $images = glob($folder . '/*.{jpg,jpeg,png,gif}', GLOB_BRACE);
+    if (count($images) > 0) {
+        return $images[array_rand($images)];
+    }
+    return '';
 }
 
-// Initialize attempts count
+// Set random poster and target word if not already set
+if (!isset($_SESSION['random_poster'])) {
+    $randomPosterPath = getRandomMoviePoster();
+    $_SESSION['random_poster'] = $randomPosterPath;
+
+    $filename = pathinfo($randomPosterPath, PATHINFO_FILENAME);
+    $_SESSION['target_word'] = strtolower($filename);
+}
+
+// Initialize attempts and guesses
 if (!isset($_SESSION['attempts'])) {
     $_SESSION['attempts'] = 0;
 }
+
+if (!isset($_SESSION['guesses'])) {
+    $_SESSION['guesses'] = [];
+}
+
+$randomPoster = $_SESSION['random_poster'] ?? '';
 
 // Handle guess submission
 if (isset($_POST['guess'])) {
     $guess = strtolower(trim($_POST['guess']));
     $target = strtolower($_SESSION['target_word']);
-    
-    // Increment the attempt counter
+
+    // Add the guess to the guesses array
+    $_SESSION['guesses'][] = $guess;
+
+    // Increment attempts
     $_SESSION['attempts']++;
 
     if ($guess === $target) {
         echo "<p>✅ You guessed correctly in " . $_SESSION['attempts'] . " attempts!</p>";
 
-        // Save result to database (lowest attempt before correct guess)
+        // Save result to database
         $servername = "localhost";
         $username = "root";
         $password = "";
@@ -39,55 +61,54 @@ if (isset($_POST['guess'])) {
         }
 
         $user = $_SESSION['username'];
-        $attempts = $_SESSION['attempts']; // Save the number of attempts
+        $attempts = $_SESSION['attempts'];
 
-        // Check if user already exists in the database
+        // Check if user already exists
         $checkUserSql = "SELECT * FROM Users WHERE Username = '$user'";
         $result = $conn->query($checkUserSql);
 
         if ($result->num_rows > 0) {
-            // User exists, update attempts if current guess is better
             $row = $result->fetch_assoc();
             if ($row['Succesful_attempt'] == 0 || $attempts < $row['Succesful_attempt']) {
                 $updateSql = "UPDATE Users SET Succesful_attempt = '$attempts' WHERE Username = '$user'";
                 $conn->query($updateSql);
             }
         } else {
-            // User doesn't exist, insert a new record
             $sql = "INSERT INTO Users (Username, Succesful_attempt) VALUES ('$user', '$attempts')";
             $conn->query($sql);
         }
 
         $conn->close();
 
-        // Mark the user as having guessed correctly
-        $_SESSION['guessed_correctly'] = true;
+        // Destroy the session to reset game
+        session_destroy();
 
-        // Trigger leaderboard update after correct guess
-        echo "<script>updateLeaderboard();</script>";
+        // Refresh the page after 2 seconds
+        echo "<script>
+            setTimeout(function() {
+                window.location.href = window.location.href;
+            }, 2000);
+        </script>";
 
-        // Optionally destroy the session if you want to reset after success
-        // session_destroy();
     } else {
+        // Wrong guess
         echo "<p>❌ Wrong guess, try again! You have " . (5 - $_SESSION['attempts']) . " attempts left.</p>";
-        
+
         if ($_SESSION['attempts'] >= 5) {
-            echo "<p>❌ You've used all attempts. Please refresh to try again.</p>";
+            echo "<p>❌ You've used all attempts. The correct answer was: <strong>" . htmlspecialchars($_SESSION['target_word']) . "</strong>.</p>";
+
+            // Destroy the session to reset game
+            session_destroy();
+
+            // Refresh the page after 2 seconds
+            echo "<script>
+                setTimeout(function() {
+                    window.location.href = window.location.href;
+                }, 2000);
+            </script>";
         }
     }
 }
-
-// Function to get a random image from the "Movie_posters" folder
-function getRandomMoviePoster($folder = 'Movie_posters') {
-    $images = glob($folder . '/*.{jpg,jpeg,png,gif}', GLOB_BRACE);
-    if (count($images) > 0) {
-        $randomImage = $images[array_rand($images)];
-        return $randomImage;
-    }
-    return ''; // Return empty if no images found
-}
-
-$randomPoster = getRandomMoviePoster(); // Get a random poster
 ?>
 
 <html>
@@ -108,9 +129,21 @@ $randomPoster = getRandomMoviePoster(); // Get a random poster
 <div class="leaderboard">
     <h2>Leaderboard</h2>
     <table id="leaderboard-table" border="1">
-        <tr><th>Username</th><th>Score</th></tr>
+        <tr><th>Username</th><th>Successful Attempts</th></tr>
         <!-- Leaderboard will be populated by Ajax -->
     </table>
+</div>
+
+<!-- Display Previous Guesses -->
+<div class="guesses">
+    <h3>Your Guesses</h3>
+    <ul>
+        <?php
+        foreach ($_SESSION['guesses'] as $guess) {
+            echo "<li>" . htmlspecialchars($guess) . "</li>";
+        }
+        ?>
+    </ul>
 </div>
 
 <!-- Game Input -->
@@ -143,10 +176,8 @@ $randomPoster = getRandomMoviePoster(); // Get a random poster
         loadLeaderboard();
     }
 
-    // Trigger leaderboard update after correct guess (you could add this after the result is saved in play_game.php)
     $(document).ready(function() {
-        loadLeaderboard(); // Initial load of leaderboard
-        // Set up an interval to refresh leaderboard
+        loadLeaderboard();
         setInterval(updateLeaderboard, 5000);
     });
 </script>
