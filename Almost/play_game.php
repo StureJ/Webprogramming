@@ -71,7 +71,11 @@ if (isset($_POST['guess'])) {
 
         $conn->close();
 
-        session_destroy();
+        unset($_SESSION['random_poster']);
+        unset($_SESSION['target_word']);
+        unset($_SESSION['attempts']);
+        unset($_SESSION['guesses']);
+
 
         echo "<script>
             setTimeout(function() {
