@@ -6,10 +6,18 @@ body {
   height: 100vh;
   margin: 0;
   font-family: Arial, sans-serif;
-  background-color: #f2f2f2;
+  background-image: linear-gradient(to top, #DAE2F8, #D6A4A4);
   flex-direction: column;
   position: relative;
-  overflow: hidden;
+  overflow: visible;
+}
+
+h1 {
+  font-size: 136px;  /* Large font size */
+  color: #000000;   /* Green color */
+  text-align: center;  /* Center the text */
+  margin-bottom: 20px;  /* Add some space below the heading */
+  font-family: Copperplate, sans-serif;  /* Font family */
 }
 
 /* Form styling */
@@ -18,7 +26,6 @@ form {
   padding: 20px;
   border: 1px solid #000000;
   border-radius: 8px;
-  background-color: #ffffff;
   width: 300px;
   box-sizing: border-box;
 }
@@ -36,7 +43,7 @@ input[type="submit"] {
   padding: 10px 20px;
   font-size: 16px;
   cursor: pointer;
-  background-color: #4CAF50;
+  background-color: #e3c787;
   color: white;
   border: none;
   border-radius: 5px;
@@ -44,7 +51,7 @@ input[type="submit"] {
 }
 
 input[type="submit"]:hover {
-  background-color: #45a049;
+  background-color: #c3a869;
 }
 
 .input {
@@ -72,18 +79,24 @@ input[type="submit"]:hover {
 
 .leaderboard th, .leaderboard td {
   padding: 8px;
-  border: 1px solid #000;
+  border: 1px solid #C06C84;
   text-align: left;
 }
 
 .leaderboard th {
-  background-color: #f2f2f2;
+  background-color: #C06C84;
 }
 
-/* Styling for random poster */
-.random-poster img {
+/* Apply shadow to the container instead of the image */
+.random-poster {
+  position: relative;
   width: 300px;
-  height: 450px;
+  height: 420px;
+  box-shadow: 0px 0px 50px rgba(0, 0, 0, 0.8); /* Shadow on container */
+}
+.random-poster img {
+  width: 100%;
+  height: 100%;
   object-fit: cover;
 }
 

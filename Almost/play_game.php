@@ -80,7 +80,7 @@ if (isset($_POST['guess'])) {
         echo "<script>
             setTimeout(function() {
                 window.location.href = window.location.href;
-            }, 2000);
+            }, 5000);
         </script>";
 
     } else {
@@ -90,7 +90,7 @@ if (isset($_POST['guess'])) {
             echo "<script>
                 setTimeout(function() {
                     window.location.href = window.location.href;
-                }, 2000);
+                }, 5000);
             </script>";
         }
     }

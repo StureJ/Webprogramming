@@ -50,9 +50,12 @@ $conn->close();
 
 <html>
 <head>
+  <title>Movdle - the game!</title>
   <link rel="stylesheet" type="text/css" href="stylesheet.css">
 </head>
 <body>
+
+<h1>Movdle</h1>
 
 <form action="play_game.php" method="POST">
   Enter Username: <input type="text" name="username" required>
