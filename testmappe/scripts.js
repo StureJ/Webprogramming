@@ -1,31 +1,4 @@
-var randomPoster = window.randomPoster;
-var attempts = window.attempts;
-
-// Pixlat den valgte poster
-var img = new Image();
-img.crossOrigin = 'anonymous';
-img.src = randomPoster;
-
-var canvas = document.getElementById('posterCanvas');
-var ctx = canvas.getContext('2d');
-
-img.onload = function () {
-    var scaleFactor = 1;
-    var scaledWidth = img.width * scaleFactor;
-    var scaledHeight = img.height * scaleFactor;
-
-    canvas.width = scaledWidth;
-    canvas.height = scaledHeight;
-
-    ctx.drawImage(img, 0, 0, scaledWidth, scaledHeight);
-
-    let pixelationLevel = Math.max(1, 5 - attempts);
-
-    if (pixelationLevel < 5) {
-        pixelateImage(ctx, canvas, pixelationLevel);
-    }
-};
-
+// Function to pixelate the canvas image
 function pixelateImage(ctx, canvas, pixelationLevel) {
     var imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
     var pixels = imgData.data;
@@ -44,7 +17,33 @@ function pixelateImage(ctx, canvas, pixelationLevel) {
     }
 }
 
-// Leaderboard function
+// Function to load the movie poster image and apply pixelation
+function loadPosterImage(posterPath, attemptsCount, gameOver) {
+    var img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.src = posterPath;
+
+    var canvas = document.getElementById('posterCanvas');
+    var ctx = canvas.getContext('2d');
+
+    img.onload = function () {
+        var scaleFactor = 1;
+        var scaledWidth = img.width * scaleFactor;
+        var scaledHeight = img.height * scaleFactor;
+
+        canvas.width = scaledWidth;
+        canvas.height = scaledHeight;
+
+        ctx.drawImage(img, 0, 0, scaledWidth, scaledHeight);
+
+        if (!gameOver) {
+            let pixelationLevel = Math.max(1, 5 - attemptsCount);
+            pixelateImage(ctx, canvas, pixelationLevel);
+        }
+    }
+}
+
+// Function to load the leaderboard data
 function loadLeaderboard() {
     $.ajax({
         url: 'get_leaderboard.php',
@@ -60,11 +59,20 @@ function loadLeaderboard() {
     });
 }
 
+// Function to periodically update the leaderboard
 function updateLeaderboard() {
     loadLeaderboard();
 }
 
+// Initialize the page when DOM is ready
 $(document).ready(function() {
     loadLeaderboard();
     setInterval(updateLeaderboard, 5000);
+    
+    // If there's a game over, reload the page after 5 seconds
+    if (typeof gameOver !== 'undefined' && gameOver) {
+        setTimeout(function() {
+            window.location.href = window.location.href;
+        }, 5000);
+    }
 });

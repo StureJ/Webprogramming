@@ -39,4 +39,35 @@ function compareGuess($guess, $target) {
 
     return $result;
 }
+
+// Function to save win to database
+function saveWinToDatabase($username, $attempts, $movie_name) {
+    $servername = "localhost";
+    $dbUsername = "root";
+    $password = "";
+    $dbname = "Movdle";
+
+    $conn = new mysqli($servername, $dbUsername, $password, $dbname);
+    if ($conn->connect_error) {
+        die("Connection failed: " . $conn->connect_error);
+    }
+
+    // Check if user exists for this movie
+    $checkUserSql = "SELECT * FROM Users WHERE Username = '$username' AND movie_name = '$movie_name'";
+    $result = $conn->query($checkUserSql);
+
+    if ($result->num_rows > 0) {
+        $row = $result->fetch_assoc();
+        if ($row['Succesful_attempt'] == 0 || $attempts < $row['Succesful_attempt']) {
+            $updateSql = "UPDATE Users SET Succesful_attempt = '$attempts' WHERE Username = '$username' AND movie_name = '$movie_name'";
+            $conn->query($updateSql);
+        }
+    } else {
+        $sql = "INSERT INTO Users (Username, Succesful_attempt, movie_name) VALUES ('$username', '$attempts', '$movie_name')";
+        $conn->query($sql);
+    }
+
+    $conn->close();
+    return true;
+}
 ?>

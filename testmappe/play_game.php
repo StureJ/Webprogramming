@@ -7,6 +7,16 @@ if (isset($_POST['username'])) {
     $_SESSION['username'] = $_POST['username'];
 }
 
+// Handle winning/losing and session resetting first
+if (isset($_SESSION['game_over']) && $_SESSION['game_over']) {
+    unset($_SESSION['random_poster']);
+    unset($_SESSION['target_word']);
+    unset($_SESSION['attempts']);
+    unset($_SESSION['guesses']);
+    unset($_SESSION['game_over']);
+    unset($_SESSION['won']);
+}
+
 // Set random poster and target word if not already set
 if (!isset($_SESSION['random_poster'])) {
     $randomPosterPath = getRandomMoviePoster();
@@ -15,9 +25,8 @@ if (!isset($_SESSION['random_poster'])) {
     $filename = pathinfo($randomPosterPath, PATHINFO_FILENAME);
     $_SESSION['target_word'] = strtolower($filename);
 
-    $_SESSION['attempts'] = 0;
-    $_SESSION['guesses'] = [];
-    $_SESSION['game_over'] = false;
+    $_SESSION['attempts'] = 0;    // Reset attempts when new poster picked
+    $_SESSION['guesses'] = [];    // Reset guesses too
 }
 
 $randomPoster = $_SESSION['random_poster'] ?? '';
@@ -33,65 +42,30 @@ if (isset($_POST['guess'])) {
     $_SESSION['attempts']++;
 
     if ($guess === $target) {
-        // Connect to database
-        $conn = new mysqli('localhost', 'root', '', 'Movdle');
-        if ($conn->connect_error) {
-            die("Connection failed: " . $conn->connect_error);
-        }
-
-        $user = $_SESSION['username'] ?? 'Unknown';
+        $_SESSION['game_over'] = true;
+        $_SESSION['won'] = true; // optional
+        
+        // Save to database
+        $user = $_SESSION['username'];
         $attempts = $_SESSION['attempts'];
         $movie_name = $_SESSION['target_word'];
-
-        $checkUserSql = "SELECT * FROM Users WHERE Username = '$user' AND movie_name = '$movie_name'";
-        $result = $conn->query($checkUserSql);
-
-        if ($result->num_rows > 0) {
-            $row = $result->fetch_assoc();
-            if ($row['Succesful_attempt'] == 0 || $attempts < $row['Succesful_attempt']) {
-                $updateSql = "UPDATE Users SET Succesful_attempt = '$attempts' WHERE Username = '$user' AND movie_name = '$movie_name'";
-                $conn->query($updateSql);
-            }
-        } else {
-            $sql = "INSERT INTO Users (Username, Succesful_attempt, movie_name) VALUES ('$user', '$attempts', '$movie_name')";
-            $conn->query($sql);
-        }
-
-        $conn->close();
-
-        // Reset after success
-        unset($_SESSION['random_poster'], $_SESSION['target_word'], $_SESSION['attempts'], $_SESSION['guesses'], $_SESSION['game_over']);
-
-        echo "<script>
-            setTimeout(function() {
-                window.location.href = window.location.href;
-            }, 3000);
-        </script>";
+        saveWinToDatabase($user, $attempts, $movie_name);
 
     } else {
         if ($_SESSION['attempts'] >= 5) {
-            session_destroy();
-            echo "<script>
-                setTimeout(function() {
-                    window.location.href = window.location.href;
-                }, 3000);
-            </script>";
+            $_SESSION['game_over'] = true;
+            $_SESSION['won'] = false; // optional
         }
     }
 }
 ?>
 
+<!DOCTYPE html>
 <html>
 <head>
     <link rel="stylesheet" href="stylesheet.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
-    <script>
-        window.randomPoster = "<?php echo $randomPoster; ?>";
-        window.attempts = <?php echo $_SESSION['attempts'] ?? 0; ?>;
-    </script>
-
-    <script src="script.js"></script>
+    <script src="scripts.js"></script>
 </head>
 <body>
 
@@ -100,6 +74,15 @@ if (isset($_POST['guess'])) {
     <div class="random-poster">
         <canvas id="posterCanvas" style="max-width: 100%; height: auto; margin-bottom: 20px;"></canvas>
     </div>
+
+    <script>
+        var randomPoster = "<?php echo $randomPoster; ?>";
+        var attempts = <?php echo isset($_SESSION['attempts']) ? $_SESSION['attempts'] : 0; ?>;
+        var gameOver = <?php echo isset($_SESSION['game_over']) && $_SESSION['game_over'] ? 'true' : 'false'; ?>;
+        
+        // Load the poster image and apply appropriate pixelation
+        loadPosterImage(randomPoster, attempts, gameOver);
+    </script>
 <?php endif; ?>
 
 <!-- Leaderboard Section -->
