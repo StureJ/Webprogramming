@@ -1,4 +1,3 @@
-// get_leaderboard.php
 <?php
 $servername = "localhost";
 $username = "root";
@@ -11,7 +10,7 @@ if ($conn->connect_error) {
 }
 
 // Query to fetch leaderboard data
-$sql = "SELECT Username, Succesful_attempt FROM Users ORDER BY Succesful_attempt ASC";
+$sql = "SELECT Username, Succesful_attempt FROM Users ORDER BY Succesful_attempt DESC"; // Descending order for leaderboard
 $result = $conn->query($sql);
 
 $leaderboard = array();
