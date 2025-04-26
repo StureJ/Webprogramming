@@ -1,0 +1,75 @@
+/* Center the form on the page */
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background-color: #f2f2f2;
+  flex-direction: column; /* Ensure content is stacked vertically */
+  position: relative; /* Needed for absolute positioning of the leaderboard */
+}
+
+/* Form styling */
+form {
+  text-align: center;
+  padding: 20px;
+  border: 1px solid #000000;
+  border-radius: 8px;
+  background-color: #ffffff;
+}
+
+input[type="text"] {
+  padding: 8px;
+  margin: 10px 0;
+  font-size: 14px;
+  width: 200px;
+  text-align: center;
+}
+
+input[type="submit"] {
+  padding: 10px 20px;
+  font-size: 16px;
+  cursor: pointer;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 5px;
+}
+
+input[type="submit"]:hover {
+  background-color: #45a049;
+}
+
+.input {
+  display: flex; /* Make this container a flexbox */
+  justify-content: center; /* Center content horizontally */
+  align-items: center; /* Center content vertically */
+  width: 100%; /* Ensure it takes up the full width */
+  margin-top: 50px; /* Adjust for desired vertical position */
+}
+
+/* Leaderboard styling */
+.leaderboard {
+  position: absolute; /* Allows the leaderboard to be positioned independently */
+  top: 100px; /* Adjust the vertical position of the leaderboard */
+  left: 50px; /* Adjust the horizontal position */
+  text-align: left; /* Align content to the left */
+}
+
+/* Style the leaderboard table */
+.leaderboard table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.leaderboard th, .leaderboard td {
+  padding: 8px;
+  border: 1px solid #000;
+  text-align: left; /* Left align the text in the table */
+}
+
+.leaderboard th {
+  background-color: #f2f2f2;
+}

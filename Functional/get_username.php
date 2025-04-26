@@ -1,6 +1,8 @@
 <?php
 session_start();
+?>
 
+<?php
 $servername = "localhost";
 $username = "root";
 $password = "";
@@ -16,11 +18,13 @@ if ($conn->connect_error) {
 
 // Check if database exists
 $sql = "CREATE DATABASE IF NOT EXISTS $dbname";
+
 if ($conn->query($sql) === TRUE) {
   echo "Database is ready or created successfully.\n";
 } else {
   echo "Error creating database: " . $conn->error;
 }
+
 
 // Select the newly created or existing database
 $conn->select_db($dbname);
@@ -32,16 +36,21 @@ $tableSql = "CREATE TABLE IF NOT EXISTS Users (
     Succesful_attempt INT(2) NOT NULL
 )";
 
+
 if ($conn->query($tableSql) === TRUE) {
   echo "Table Users is ready.\n";
 } else {
   echo "Error creating table: " . $conn->error;
 }
 
+
 $conn->close();
 ?>
 
 <html>
+<head>
+  <link rel="stylesheet" type="text/css" href="stylesheet.css">
+</head>
 <body>
 
 <form action="play_game.php" method="POST">
