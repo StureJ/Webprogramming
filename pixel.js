@@ -1,5 +1,6 @@
 // pixel.js
 
+
 var img = new Image();
 img.crossOrigin = 'anonymous';
 img.src = randomPoster;

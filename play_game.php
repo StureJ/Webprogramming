@@ -7,6 +7,16 @@ if (isset($_POST['username'])) {
     $_SESSION['username'] = $_POST['username'];
 }
 
+// Handle winning/losing and session resetting first
+if (isset($_SESSION['game_over']) && $_SESSION['game_over']) {
+    unset($_SESSION['random_poster']);
+    unset($_SESSION['target_word']);
+    unset($_SESSION['attempts']);
+    unset($_SESSION['guesses']);
+    unset($_SESSION['game_over']);
+    unset($_SESSION['won']);
+}
+
 // Set random poster and target word if not already set
 if (!isset($_SESSION['random_poster'])) {
     $randomPosterPath = getRandomMoviePoster();
@@ -14,15 +24,9 @@ if (!isset($_SESSION['random_poster'])) {
 
     $filename = pathinfo($randomPosterPath, PATHINFO_FILENAME);
     $_SESSION['target_word'] = strtolower($filename);
-}
 
-// Initialize attempts and guesses
-if (!isset($_SESSION['attempts'])) {
-    $_SESSION['attempts'] = 0;
-}
-
-if (!isset($_SESSION['guesses'])) {
-    $_SESSION['guesses'] = [];
+    $_SESSION['attempts'] = 0;    // Reset attempts when new poster picked
+    $_SESSION['guesses'] = [];    // Reset guesses too
 }
 
 $randomPoster = $_SESSION['random_poster'] ?? '';
@@ -38,6 +42,10 @@ if (isset($_POST['guess'])) {
     $_SESSION['attempts']++;
 
     if ($guess === $target) {
+        $_SESSION['game_over'] = true;
+        $_SESSION['won'] = true; // optional
+
+        // Database saving
         $servername = "localhost";
         $username = "root";
         $password = "";
@@ -50,32 +58,24 @@ if (isset($_POST['guess'])) {
 
         $user = $_SESSION['username'];
         $attempts = $_SESSION['attempts'];
-        $movie_name = $_SESSION['target_word']; // Store the current movie name
+        $movie_name = $_SESSION['target_word'];
 
         // Check if user exists for this movie
         $checkUserSql = "SELECT * FROM Users WHERE Username = '$user' AND movie_name = '$movie_name'";
         $result = $conn->query($checkUserSql);
 
         if ($result->num_rows > 0) {
-            // If the user exists for this movie, update their successful attempt if it's fewer
             $row = $result->fetch_assoc();
             if ($row['Succesful_attempt'] == 0 || $attempts < $row['Succesful_attempt']) {
                 $updateSql = "UPDATE Users SET Succesful_attempt = '$attempts' WHERE Username = '$user' AND movie_name = '$movie_name'";
                 $conn->query($updateSql);
             }
         } else {
-            // If the user doesn't exist for this movie, insert new entry
             $sql = "INSERT INTO Users (Username, Succesful_attempt, movie_name) VALUES ('$user', '$attempts', '$movie_name')";
             $conn->query($sql);
         }
 
         $conn->close();
-
-        unset($_SESSION['random_poster']);
-        unset($_SESSION['target_word']);
-        unset($_SESSION['attempts']);
-        unset($_SESSION['guesses']);
-
 
         echo "<script>
             setTimeout(function() {
@@ -85,7 +85,8 @@ if (isset($_POST['guess'])) {
 
     } else {
         if ($_SESSION['attempts'] >= 5) {
-            session_destroy();
+            $_SESSION['game_over'] = true;
+            $_SESSION['won'] = false; // optional
 
             echo "<script>
                 setTimeout(function() {
@@ -113,6 +114,7 @@ if (isset($_POST['guess'])) {
     <script>
         var randomPoster = "<?php echo $randomPoster; ?>";
         var attempts = <?php echo isset($_SESSION['attempts']) ? $_SESSION['attempts'] : 0; ?>;
+        var gameOver = <?php echo isset($_SESSION['game_over']) && $_SESSION['game_over'] ? 'true' : 'false'; ?>;
 
         var img = new Image();
         img.crossOrigin = 'anonymous';
@@ -122,7 +124,7 @@ if (isset($_POST['guess'])) {
         var ctx = canvas.getContext('2d');
 
         img.onload = function () {
-            var scaleFactor = 1; // you can change this if you want to scale down
+            var scaleFactor = 1;
             var scaledWidth = img.width * scaleFactor;
             var scaledHeight = img.height * scaleFactor;
 
@@ -131,8 +133,10 @@ if (isset($_POST['guess'])) {
 
             ctx.drawImage(img, 0, 0, scaledWidth, scaledHeight);
 
-            let pixelationLevel = Math.max(1, 5 - attempts);
-            pixelateImage(ctx, canvas, pixelationLevel);
+            if (!gameOver) {
+                let pixelationLevel = Math.max(1, 5 - attempts);
+                pixelateImage(ctx, canvas, pixelationLevel);
+            }
         }
 
         function pixelateImage(ctx, canvas, pixelationLevel) {
@@ -168,14 +172,16 @@ if (isset($_POST['guess'])) {
     <h3>Your Guesses</h3>
     <ul>
         <?php
-        foreach ($_SESSION['guesses'] as $guess) {
-            $comparisonResult = compareGuess($guess, $_SESSION['target_word']);
-            echo "<li>";
-            for ($i = 0; $i < strlen($guess); $i++) {
-                $status = $comparisonResult[$i];
-                echo "<span class='$status'>" . htmlspecialchars($guess[$i]) . "</span>";
+        if (isset($_SESSION['guesses'])) {
+            foreach ($_SESSION['guesses'] as $guess) {
+                $comparisonResult = compareGuess($guess, $_SESSION['target_word']);
+                echo "<li>";
+                for ($i = 0; $i < strlen($guess); $i++) {
+                    $status = $comparisonResult[$i];
+                    echo "<span class='$status'>" . htmlspecialchars($guess[$i]) . "</span>";
+                }
+                echo "</li>";
             }
-            echo "</li>";
         }
         ?>
     </ul>
